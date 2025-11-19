@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.booksapp.ui.theme.BooksAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +81,22 @@ fun BooksScreen(vm: BooksViewModel = viewModel()) {
             items(results, key = { it.id }) { item ->
                 BookRow(
                     item = item,
-                    onClick = {}
+                    onClick = {
+                        val vi = item.volumeInfo
+                        val authors = vi.authors?.joinToString(", ") ?: "-"
+                        val cover = secureImageUrl(
+                            vi.imageLinks?.thumbnail ?:
+                            vi.imageLinks?.smallThumbnail
+                        )
+                        val intent = Intent(context,
+                            DetailActivity::class.java).apply {
+                            putExtra("title", vi.title ?: "-")
+                            putExtra("authors", authors)
+                            putExtra("cover", cover ?: "")
+                            putExtra("description", vi.description ?: "-")
+                        }
+                        context.startActivity(intent)
+                    }
                 )
             }
         }
